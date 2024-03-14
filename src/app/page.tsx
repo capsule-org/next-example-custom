@@ -108,7 +108,6 @@ export default function Home() {
       </p>
       <input
         className="border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-5 pt-5 backdrop-blur-2xl dark:bg-zinc-800/30 dark:from-inherit lg:bg-gray-200 lg:p-4"
-        id="email"
         name="email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
@@ -122,7 +121,6 @@ export default function Home() {
       </button>
       <input
         className="border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-5 pt-5 backdrop-blur-2xl dark:bg-zinc-800/30 dark:from-inherit lg:bg-gray-200 lg:p-4"
-        id="verifcationCode"
         name="verificationCode"
         value={verificationCode}
         onChange={(e) => setVerificationCode(e.target.value)}
@@ -151,7 +149,6 @@ export default function Home() {
       }
       <input
         className="border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-5 pt-5 backdrop-blur-2xl dark:bg-zinc-800/30 dark:from-inherit lg:bg-gray-200 lg:p-4"
-        id="messageToSign"
         name="messageToSign"
         value={messageToSign}
         onChange={(e) => setMessageToSign(e.target.value)}
@@ -170,7 +167,6 @@ export default function Home() {
       }
       <input
         className="border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-5 pt-5 backdrop-blur-2xl dark:bg-zinc-800/30 dark:from-inherit lg:bg-gray-200 lg:p-4"
-        id="email"
         name="email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
