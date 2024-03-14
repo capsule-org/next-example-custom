@@ -22,15 +22,13 @@ export default function Home() {
   }
 
   async function loadCapsule() {
-    let loadedInstance;
     if (!capsule) {
       const CapsuleModule = await import('@usecapsule/web-sdk');
-      loadedInstance = new CapsuleModule.default(
+      const loadedInstance = new CapsuleModule.default(
         CapsuleModule.Environment.DEVELOPMENT,
         CAPSULE_API_KEY
       );
       setCapsule(loadedInstance);
-      console.log('Capsule loaded');
     }
   }
 
@@ -62,6 +60,7 @@ export default function Home() {
     const url = await capsule.verifyEmail(verificationCode);
     setPasskeyCreationUrl(url);
     window.open(url, 'popup', 'popup=true,width=400,height=500');
+
     const recoverySecret = await capsule.waitForPasskeyAndCreateWallet();
     setWalletAddress(Object.values(capsule.getWallets())[0].address);
     setRecoverySecret(recoverySecret);
@@ -74,6 +73,7 @@ export default function Home() {
     const url = await capsule.initiateUserLogin(email);
     setPasskeyLoginUrl(url);
     window.open(url, 'popup', 'popup=true,width=400,height=500');
+
     await capsule.waitForLoginAndSetup();
     setWalletAddress(Object.values(capsule.getWallets())[0].address);
   }
@@ -99,9 +99,7 @@ export default function Home() {
     <main className="m-5 flex flex-col gap-4">
       <button
         className="m-2 rounded-full bg-white px-4 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-        onClick={() =>
-          checkIfLoggedIn()
-        }
+        onClick={checkIfLoggedIn}
       >
         Check if User Is Logged In
       </button>
@@ -118,9 +116,7 @@ export default function Home() {
       />
       <button
         className="m-2 rounded-full bg-white px-4 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-        onClick={() =>
-          createAccount()
-        }
+        onClick={createAccount}
       >
         Create Account
       </button>
@@ -134,9 +130,7 @@ export default function Home() {
       />
       <button
         className="m-2 rounded-full bg-white px-4 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-        onClick={() =>
-          verifyEmail()
-        }
+        onClick={verifyEmail}
       >
         Verify Email
       </button>
@@ -165,9 +159,7 @@ export default function Home() {
       />
       <button
         className="m-2 rounded-full bg-white px-4 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-        onClick={() =>
-          signMessage("hi")
-        }
+        onClick={() => signMessage(messageToSign)}
       >
         Sign Message
       </button>
@@ -186,9 +178,7 @@ export default function Home() {
       />
       <button
         className="m-2 rounded-full bg-white px-4 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-        onClick={() =>
-          initiateLogin()
-        }
+        onClick={initiateLogin}
       >
         Initiate Login
       </button>
