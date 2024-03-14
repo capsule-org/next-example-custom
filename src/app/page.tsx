@@ -18,13 +18,13 @@ export default function Home() {
 
   const CAPSULE_API_KEY = process.env.NEXT_PUBLIC_CAPSULE_API_KEY;
   if (!CAPSULE_API_KEY) {
-    throw new Error("CAPSULE_API_KEY is undefined");
+    throw new Error('CAPSULE_API_KEY is undefined');
   }
 
   async function loadCapsule() {
     let loadedInstance;
     if (!capsule) {
-      const CapsuleModule = await import("@usecapsule/web-sdk");
+      const CapsuleModule = await import('@usecapsule/web-sdk');
       loadedInstance = new CapsuleModule.default(
         CapsuleModule.Environment.DEVELOPMENT,
         CAPSULE_API_KEY
