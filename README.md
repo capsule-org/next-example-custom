@@ -1,4 +1,5 @@
 # next-example
+This example uses the Capsule Web SDK with a custom UI in a Next.js app.
 
 ## Getting Started
 
