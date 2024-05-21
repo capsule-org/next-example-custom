@@ -9,21 +9,27 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@usecapsule/ethers-v6-integration": "1.3.0",
-    "@usecapsule/web-sdk": "1.3.0",
-    "react": "^18",
-    "react-dom": "^18",
-    "next": "14.1.1"
+    "@usecapsule/ethers-v5-integration": "^1.3.0",
+    "@usecapsule/ethers-v6-integration": "^1.10.0",
+    "@usecapsule/rainbowkit": "^2.1.3",
+    "@usecapsule/viem-v1-integration": "^1.10.0",
+    "@usecapsule/viem-v2-integration": "^1.9.0",
+    "@usecapsule/wagmi-v1-integration": "^2.6.0",
+    "@usecapsule/wagmi-v2-integration": "^2.7.0",
+    "@usecapsule/web-sdk": "^1.12.0",
+    "next": "^14.2.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
-    "typescript": "^5",
-    "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
-    "autoprefixer": "^10.0.1",
-    "postcss": "^8",
-    "tailwindcss": "^3.3.0",
-    "eslint": "^8",
-    "eslint-config-next": "14.1.1"
+    "@types/node": "^20.12.12",
+    "@types/react": "^18.3.2",
+    "@types/react-dom": "^18.3.0",
+    "autoprefixer": "^10.4.19",
+    "eslint": "^9.3.0",
+    "eslint-config-next": "^14.2.3",
+    "postcss": "^8.4.38",
+    "tailwindcss": "^3.4.3",
+    "typescript": "^5.4.5"
   }
 }
