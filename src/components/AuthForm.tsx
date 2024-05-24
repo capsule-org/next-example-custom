@@ -2,6 +2,7 @@ import React from "react";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { Label } from "./ui/label";
+import { Separator } from "./ui/separator";
 
 interface AuthFormProps {
   email: string;
@@ -9,6 +10,7 @@ interface AuthFormProps {
   createAccount: () => void;
   initiateLogin: () => void;
   isExistingUser: boolean;
+  setIsCapsuleModalOpen: (isOpen: boolean) => void;
 }
 
 export const AuthForm: React.FC<AuthFormProps> = ({
@@ -17,10 +19,14 @@ export const AuthForm: React.FC<AuthFormProps> = ({
   createAccount,
   initiateLogin,
   isExistingUser,
+  setIsCapsuleModalOpen,
 }) => {
   return (
     <>
-      <h3 className="font-semibold text-center text-xl">Get Started</h3>
+      <h3 className="font-semibold text-center text-xl">Capsule Modal</h3>
+      <Button onClick={() => setIsCapsuleModalOpen(true)}>Sign In with Capsule Modal</Button>
+      <Separator orientation="horizontal" className="my-6" />
+      <h3 className="font-semibold text-center text-xl">Email Login</h3>
       <div>
         <Label htmlFor="email" className="label">
           Your Email

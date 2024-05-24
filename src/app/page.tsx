@@ -2,8 +2,6 @@
 
 import { useEffect, useState } from "react";
 
-import type Capsule from "@usecapsule/web-sdk";
-
 import { Button } from "@/components/ui/button";
 import { Alert } from "@/components/ui/alert";
 
@@ -18,9 +16,18 @@ import { MessageSigner } from "@/components/MessageSigner";
 import { Loader } from "@/components/ui/loader";
 import { checkIfLoggedIn, createAccount, initiateLogin, logout, verifyEmail } from "@/utils/authUtils";
 import { signMessage } from "@/utils/signingUtils";
+import dynamic from "next/dynamic";
+import { CapsuleWeb, Environment, OAuthMethod } from "@usecapsule/web-sdk";
+import "@usecapsule/react-sdk/styles.css";
+import Logo from "../../public/logo.svg";
+
+const CapsuleModal = dynamic(() => import("@usecapsule/react-sdk").then((module) => module.CapsuleModal), {
+  ssr: false,
+});
 
 export default function Home() {
-  const [capsule, setCapsule] = useState<Capsule>();
+  const [capsuleClient, setCapsuleClient] = useState<CapsuleWeb | null>(null);
+
   const [email, setEmail] = useState<string>("");
   const [signature, setSignature] = useState<string>("");
   const [verificationCode, setVerificationCode] = useState<string>("");
@@ -33,30 +40,24 @@ export default function Home() {
   const [isExistingUser, setIsExistingUser] = useState<boolean>(false);
   const [selectedSigner, setSelectedSigner] = useState<string>("");
 
+  const [isCapsuleModalOpen, setIsCapsuleModalOpen] = useState<boolean>(false);
+
   const { toast } = useToast();
 
-  const CAPSULE_API_KEY = process.env.NEXT_PUBLIC_CAPSULE_API_KEY;
-  if (!CAPSULE_API_KEY) {
-    throw new Error("NEXT_PUBLIC_CAPSULE_API_KEY is undefined");
-  }
-
-  async function loadCapsule() {
-    if (!capsule) {
-      const CapsuleModule = await import("@usecapsule/web-sdk");
-      const loadedInstance = new CapsuleModule.default(CapsuleModule.Environment.DEVELOPMENT, CAPSULE_API_KEY);
-      setCapsule(loadedInstance);
-    }
-  }
-
   useEffect(() => {
-    loadCapsule();
+    if (process.env.NEXT_PUBLIC_CAPSULE_API_KEY) {
+      const client = new CapsuleWeb(Environment.DEVELOPMENT, process.env.NEXT_PUBLIC_CAPSULE_API_KEY);
+      setCapsuleClient(client);
+    } else {
+      console.error("Capsule API key is missing");
+    }
   }, []);
 
   useEffect(() => {
-    if (capsule) {
-      checkIfLoggedIn(capsule, toast, setWalletAddress, setUserIsLoggedIn);
+    if (capsuleClient) {
+      checkIfLoggedIn(capsuleClient, toast, setWalletAddress, setUserIsLoggedIn);
     }
-  }, [capsule]);
+  }, []);
 
   const onSignerSelected = (signer: string) => {
     setSignature("");
@@ -68,76 +69,108 @@ export default function Home() {
     });
   };
 
-  return capsule ? (
-    <CapsuleCard>
-      {userIsLoggedIn ? (
-        <UserAlerts.UserLoggedIn />
-      ) : (
-        <>
-          <UserAlerts.UserNotLoggedIn />
-          <Button onClick={() => checkIfLoggedIn(capsule, toast, setWalletAddress, setUserIsLoggedIn)}>
-            Check if User Is Logged In
-          </Button>
-        </>
-      )}
-      {walletAddress && <Alert className="break-words">{`Wallet Address: ${walletAddress || "N/A"}`}</Alert>}
+  if (!capsuleClient) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <Loader alignment="center" />
+      </div>
+    );
+  }
 
-      <Separator orientation="horizontal" className="my-6" />
+  return (
+    <>
+      <CapsuleCard>
+        {userIsLoggedIn ? (
+          <UserAlerts.UserLoggedIn />
+        ) : (
+          <>
+            <UserAlerts.UserNotLoggedIn />
+            <Button onClick={() => checkIfLoggedIn(capsuleClient, toast, setWalletAddress, setUserIsLoggedIn)}>
+              Check if User Is Logged In
+            </Button>
+          </>
+        )}
+        {walletAddress && <Alert className="break-words">{`Wallet Address: ${walletAddress || "N/A"}`}</Alert>}
 
-      {userIsLoggedIn ? (
-        <>
-          <MessageSigner
-            onSignerSelected={onSignerSelected}
-            messageToSign={messageToSign}
-            setMessageToSign={setMessageToSign}
-            signMessage={() => signMessage(capsule, selectedSigner, messageToSign, setSignature, toast)}
-            selectedSigner={selectedSigner}
-            walletAddress={walletAddress}
-            userIsLoggedIn={userIsLoggedIn}
-            signature={signature}
-          />
-          <Button
-            onClick={() =>
-              logout(
-                capsule,
-                toast,
-                setUserIsLoggedIn,
-                setEmail,
-                setSignature,
-                setVerificationCode,
-                setWalletAddress,
-                setRecoverySecret,
-                setMessageToSign,
-                setShowVerificationInput
-              )
-            }>
-            Logout
-          </Button>
-        </>
-      ) : (
-        <>
-          {!showVerificationInput && (
-            <AuthForm
-              email={email}
-              setEmail={setEmail}
-              createAccount={() => createAccount(capsule, email, toast, setIsExistingUser, setShowVerificationInput)}
-              initiateLogin={() => initiateLogin(capsule, email, toast, setUserIsLoggedIn, setWalletAddress)}
-              isExistingUser={isExistingUser}
+        <Separator orientation="horizontal" className="my-6" />
+
+        {userIsLoggedIn ? (
+          <>
+            <MessageSigner
+              onSignerSelected={onSignerSelected}
+              messageToSign={messageToSign}
+              setMessageToSign={setMessageToSign}
+              signMessage={() => signMessage(capsuleClient, selectedSigner, messageToSign, setSignature, toast)}
+              selectedSigner={selectedSigner}
+              walletAddress={walletAddress}
+              userIsLoggedIn={userIsLoggedIn}
+              signature={signature}
             />
-          )}
-          {showVerificationInput && (
-            <VerifyEmailForm
-              verificationCode={verificationCode}
-              setVerificationCode={setVerificationCode}
-              verifyEmail={() => verifyEmail(capsule, verificationCode, setWalletAddress, setRecoverySecret, toast)}
-            />
-          )}
-        </>
-      )}
+            <Button
+              onClick={() =>
+                logout(
+                  capsuleClient,
+                  toast,
+                  setUserIsLoggedIn,
+                  setEmail,
+                  setSignature,
+                  setVerificationCode,
+                  setWalletAddress,
+                  setRecoverySecret,
+                  setMessageToSign,
+                  setShowVerificationInput
+                )
+              }>
+              Logout
+            </Button>
+          </>
+        ) : (
+          <>
+            {!showVerificationInput && (
+              <AuthForm
+                email={email}
+                setEmail={setEmail}
+                createAccount={() =>
+                  createAccount(capsuleClient, email, toast, setIsExistingUser, setShowVerificationInput)
+                }
+                initiateLogin={() => initiateLogin(capsuleClient, email, toast, setUserIsLoggedIn, setWalletAddress)}
+                isExistingUser={isExistingUser}
+                setIsCapsuleModalOpen={setIsCapsuleModalOpen}
+              />
+            )}
+            {showVerificationInput && (
+              <VerifyEmailForm
+                verificationCode={verificationCode}
+                setVerificationCode={setVerificationCode}
+                verifyEmail={() =>
+                  verifyEmail(capsuleClient, verificationCode, setWalletAddress, setRecoverySecret, toast)
+                }
+              />
+            )}
+          </>
+        )}
 
-      {recoverySecret && <Alert className="break-words">{`Recovery Secret: ${recoverySecret}`}</Alert>}
-    </CapsuleCard>
-  ) : (
-    <Loader alignment="center" />
+        {recoverySecret && <Alert className="break-words">{`Recovery Secret: ${recoverySecret}`}</Alert>}
+      </CapsuleCard>
+      {isCapsuleModalOpen && (
+        <CapsuleModal
+          capsule={capsuleClient}
+          isOpen={isCapsuleModalOpen}
+          onClose={() => {
+            setIsCapsuleModalOpen(false);
+            checkIfLoggedIn(capsuleClient, toast, setWalletAddress, setUserIsLoggedIn);
+          }}
+          appName={"Capsule Example App"}
+          logo={"/logo.png"}
+          theme={{
+            backgroundColor: "#ffffff",
+            foregroundColor: "#0F172A",
+            oAuthLogoVariant: "dark",
+            borderRadius: "md",
+          }}
+          oAuthMethods={[OAuthMethod.APPLE, OAuthMethod.GOOGLE, OAuthMethod.TWITTER, OAuthMethod.FACEBOOK]}
+        />
+      )}
+    </>
   );
 }
