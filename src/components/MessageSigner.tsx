@@ -38,8 +38,6 @@ export const MessageSigner: React.FC<MessageSignerProps> = ({
             <SelectLabel>Signers</SelectLabel>
             <SelectItem value="ethers-v5">Ethers v5</SelectItem>
             <SelectItem value="ethers-v6">Ethers v6</SelectItem>
-            <SelectItem value="wagmi-v1">Wagmi v1</SelectItem>
-            <SelectItem value="wagmi-v2">Wagmi v2</SelectItem>
             <SelectItem value="viem-v1">Viem v1</SelectItem>
             <SelectItem value="viem-v2">Viem v2</SelectItem>
           </SelectGroup>
